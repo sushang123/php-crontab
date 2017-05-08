@@ -1,8 +1,8 @@
 <?php
 /**
 * PHP crontab 
-* Ê¹ÓÃ·½·¨:ÔÚconfig.iniÖĞÅäÖÃÒªÖ´ĞĞµÄ¼Æ»®ÈÎÎñ
-*          ÔÚphp-cliÖ´ĞĞrun.php
+* ä½¿ç”¨æ–¹æ³•:åœ¨config.iniä¸­é…ç½®è¦æ‰§è¡Œçš„è®¡åˆ’ä»»åŠ¡
+*          åœ¨php-cliæ‰§è¡Œrun.php
 * @author Devil
 **/	
 while(true){
@@ -10,13 +10,15 @@ while(true){
 		foreach($config as $cronName=>$info){
 			$runStatus = timeMark($info['run_time']);
 			if($runStatus){
-				echo '['.date('Y-m-d H:i:S').']Task:['.$cronName."]->Is Runing\r\n";
+				echo '['.date('Y-m-d H:i:s').']Task:['.$cronName."]->Is Runing\r\n";
 				$handle = popen('cd '.$info['cd_dir'].'&'.$info['common'],'r');
 				while(!feof($handle)) {
 					$buffer = fgets($handle);
 					writeLog($info['log_dir'],$buffer);
 				}
 				pclose($handle);
+			}}else{
+				echo '['.date('Y-m-d H:i:s').']'."Waiting for a task\r\n";
 			}
 		}
 	sleep(1);
@@ -24,17 +26,17 @@ while(true){
 
 	
 /**
-*½âÎöÊ±¼ä¼Æ»®ÈÎÎñ¹æÔò
+*è§£ææ—¶é—´è®¡åˆ’ä»»åŠ¡è§„åˆ™
 */
 //$match = '*/3 18 * * *';
 //$res = timeMark($match);	
 function timeMark($match){
-	$s = date('s');//Ãë
-	$i = date('i');//·Ö
-	$h = date('H');//Ê±
-	$d = date('d');//ÈÕ
-	$m = date('m');//ÔÂ
-	$w = date('w');//ÖÜ
+	$s = date('s');//ç§’
+	$i = date('i');//åˆ†
+	$h = date('H');//æ—¶
+	$d = date('d');//æ—¥
+	$m = date('m');//æœˆ
+	$w = date('w');//å‘¨
 	$run_time = explode(' ',$match);
 	$data[] = T($run_time[0],$s,'s');
 	$data[] = T($run_time[1],$i,'i');
@@ -45,7 +47,7 @@ function timeMark($match){
 	return !in_array(false,$data)?true:false;
 }
 
-//½âÎöµ¥¸öÊ±¼ä¹æÔòÏ¸½Ú
+//è§£æå•ä¸ªæ—¶é—´è§„åˆ™ç»†èŠ‚
 function T($rule,$time,$timeType){
 	if(is_numeric($rule)){
 		return $rule == $time ?true:false;
@@ -69,8 +71,8 @@ function T($rule,$time,$timeType){
 		return false;
 	}
 }
-//½âÎö12-2 23-22 ÈÎºÎÊ±¼äµÄÍ¨ÓÃ
-//$rank·¶Î§  $num·§Öµ $timeµ±Ç°Ê±¼ä $timeTypeÊ±¼äÀàĞÍ
+//è§£æ12-2 23-22 ä»»ä½•æ—¶é—´çš„é€šç”¨
+//$rankèŒƒå›´  $numé˜€å€¼ $timeå½“å‰æ—¶é—´ $timeTypeæ—¶é—´ç±»å‹
 function analysis($rank,$num,$time,$timeType){
 	$type = array(
 		'i'=>59,'h'=>23,'d'=>31,'m'=>12,'w'=>6,
@@ -88,17 +90,20 @@ function analysis($rank,$num,$time,$timeType){
 	}
 	return in_array($time,$temp)?true:false;
 }
-//¸ù¾İµ±Ç°Ê±¼ä¼ÆËãÊÇ·ñ¶¨Ê±Ñ­»·Ö´ĞĞ
-//$timeµ±Ç°Ê±¼ä $numÖÜÆÚÖµ 
+//æ ¹æ®å½“å‰æ—¶é—´è®¡ç®—æ˜¯å¦å®šæ—¶å¾ªç¯æ‰§è¡Œ
+//$timeå½“å‰æ—¶é—´ $numå‘¨æœŸå€¼ 
 function analysis_t($time,$num){
 	return $time%$num == 0?true:false;
 }
 
+//$path æ—¥å¿—è·¯å¾„ $body æ—¥å¿—ä¿¡æ¯
 function writeLog($path,$body){
-	$temp = pathinfo($path);
-	if(!file_exists($temp['dirname'])){
-		mkdir($temp['dirname'],0755,true);
+	if(!empty($path) && !empty($body)){
+	    $temp = pathinfo($path);
+	    if(!file_exists($temp['dirname'])){
+		  mkdir($temp['dirname'],0755,true);
+	    }
+	    file_put_contents($path,'['.date('Y-m-d H:i:s')."]\r\n".$body."\r\n\n",FILE_APPEND);
 	}
-	file_put_contents($path,'['.date('Y-m-d H:i:s')."]\r\n".$body."\r\n\n",FILE_APPEND);
 }
 
