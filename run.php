@@ -8,16 +8,17 @@
 while(true){
 		$config = parse_ini_file('config.ini',true);
 		foreach($config as $cronName=>$info){
+            if(array_key_exists('log_dir',$info) && !empty($info['log_dir'])){
+                $outputCommon = ' 1>>'.$info['log_dir'].' 2>&1';
+            }else{
+                $outputCommon = '';
+            }
 			$runStatus = timeMark($info['run_time']);
 			if($runStatus){
 				echo '['.date('Y-m-d H:i:s').']Task:['.$cronName."]->Is Runing\r\n";
-				$handle = popen('cd '.$info['cd_dir'].'&'.$info['common'],'r');
-				while(!feof($handle)) {
-					$buffer = fgets($handle);
-					writeLog($info['log_dir'],$buffer);
-				}
+				$handle = popen('cd '.$info['cd_dir'].'&'.$info['common'].$outputCommon,'r');
 				pclose($handle);
-			}}else{
+			}else{
 				echo '['.date('Y-m-d H:i:s').']'."Waiting for a task\r\n";
 			}
 		}
