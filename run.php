@@ -15,7 +15,8 @@ while(true){
             }
 			$runStatus = timeMark($info['run_time']);
 			if($runStatus){
-				echo '['.date('Y-m-d H:i:s').']Task:['.$cronName."]->Is Runing\r\n";
+                $memory = convert(memory_get_usage(true));
+				echo '['.date('Y-m-d H:i:s').'] Task:['.$cronName."]->Is Runing Mem:".$memory."\r\n";
 				$handle = popen('cd '.$info['cd_dir'].'&'.$info['common'].$outputCommon,'r');
 				pclose($handle);
 			}else{
@@ -106,5 +107,11 @@ function writeLog($path,$body){
 	    }
 	    file_put_contents($path,'['.date('Y-m-d H:i:s')."]\r\n".$body."\r\n\n",FILE_APPEND);
 	}
+}
+//字节换算
+function convert($size)
+{
+        $unit=array('b','kb','mb','gb','tb','pb');
+            return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
 }
 
