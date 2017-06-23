@@ -3,6 +3,7 @@
 * PHP crontab 
 * 使用方法:在config.ini中配置要执行的计划任务
 *          在php-cli执行run.php
+* @tudo 调用循环存在异常，待修复
 * @author Devil
 **/	
 while(true){
