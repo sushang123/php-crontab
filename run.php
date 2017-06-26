@@ -3,14 +3,13 @@
 * PHP crontab 
 * 使用方法:在config.ini中配置要执行的计划任务
 *          在php-cli执行run.php
-* @tudo 调用循环存在异常，待修复
 * @author Devil
 **/	
 while(true){
 		$config = parse_ini_file('config.ini',true);
 		foreach($config as $cronName=>$info){
             if(array_key_exists('log_dir',$info) && !empty($info['log_dir'])){
-                $outputCommon = ' 1>>'.$info['log_dir'].' 2>&1';
+                $outputCommon = ' 1>>'.$info['log_dir'].' 2>&1 &';
             }else{
                 $outputCommon = '';
             }
@@ -18,8 +17,8 @@ while(true){
 			if($runStatus){
                 $memory = convert(memory_get_usage(true));
 				echo '['.date('Y-m-d H:i:s').'] Task:['.$cronName."]->Is Runing Mem:".$memory."\r\n";
-				$handle = popen('cd '.$info['cd_dir'].'&'.$info['common'].$outputCommon,'r');
-				pclose($handle);
+				pclose( popen('cd '.$info['cd_dir'].'&'.$info['common'].$outputCommon,'r'));
+				//pclose($handle);
 			}else{
 				echo '['.date('Y-m-d H:i:s').']'."Waiting for a task\r\n";
 			}
