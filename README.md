@@ -9,11 +9,11 @@ PHP crontab 使用方法：
 
     配置示例 run_time = */2 */1 * * * *  (执行周期： 秒 分 时 日 月 周)
      
-             cd_dir = /root/test/ (脚本所在目录，建议绝对路径)
+              cd_dir = /root/test/ (脚本所在目录，建议绝对路径)
              
              common = php demo.php (待执行的命令)
              
-             log_dir = /root/log/demo.log (脚本输出日志文件，建议绝对路径)
+              log_dir = /root/log/demo.log (脚本输出日志文件，建议绝对路径)
              
 2.在php-cli窗口执行run.php ，如果需要让计划任务在后台执行则run.php &
 
